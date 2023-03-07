@@ -1,3 +1,4 @@
+//@ts-check
 const titleInput = document.getElementById("questInputArea");
 const given = titleInput.value;
 titleInput.addEventListener("keypress", function(event){
