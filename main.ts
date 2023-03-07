@@ -2,7 +2,7 @@ const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
 const path = require('path');
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
-    apiKey: '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'
+    apiKey: 'the previous API key has been deactivated'
 });
 const openai = new OpenAIApi(configuration);
 
