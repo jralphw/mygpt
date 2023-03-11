@@ -26,24 +26,27 @@ const createWindow = () => {
         }
     });
 
-    // Event listener on main process to handle incoming messages from renderer process with a question
-    ipcMain.on('send-qn', async (event, qn) => {
-        console.log(qn);
-        mainWindow.hide();
-
-        // Run the question through OpenAI's GPT-3 AI model to generate an answer
-        const completion = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: qn }],
-        });
-        ans = completion.data.choices[0].message.content;
-        console.log(ans);
-        reply(ans);
-        mainWindow.close();
-    })
-    
     mainWindow.loadFile('qn.html');
 }
+
+
+// Event listener on main process to handle incoming messages from renderer process with a question
+ipcMain.on('send-qn', async (event, qn) => {
+    console.log(qn);
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    win.hide();
+
+    // Run the question through OpenAI's GPT-3 AI model to generate an answer
+    const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: qn }],
+    });
+    ans = completion.data.choices[0].message.content;
+    console.log(ans);
+    reply(ans);
+    // mainWindow.close();
+})
 
 function reply(answer) {
     const resWindow = new BrowserWindow({
@@ -53,7 +56,7 @@ function reply(answer) {
         webPreferences: {
             preload: path.join(__dirname, 'preload2.js'),
         }
-    })
+    });
     resWindow.loadFile('ans.html');
     resWindow.webContents.send('ai-ans', answer);
 }
@@ -67,7 +70,6 @@ app.whenReady().then(() => {
         createWindow();
     }) */
 })
-
 
 
 
