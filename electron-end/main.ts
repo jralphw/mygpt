@@ -1,15 +1,15 @@
 // Importing required modules from electron, path and openai
 const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
 const path = require('path');
-const { Configuration, OpenAIApi } = require("openai");
+/* const { Configuration, OpenAIApi } = require("openai");
 
 // Creating a new instance of OpenAI's configuration with the API key from environment variable
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API
-});
+}); */
 
 // Creating a new instance of OpenAI API using the provided configuration 
-const openai = new OpenAIApi(configuration);
+// const openai = new OpenAIApi(configuration);
 
 // Declaring a variable for storing the answer string
 let ans = '';
@@ -18,15 +18,17 @@ let ans = '';
 const createWindow = () => {
     // Creating a new browser window with the specified properties
     const mainWindow = new BrowserWindow({
-        width: 1000,
-        height: 80,
         frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         }
     });
 
-    mainWindow.loadFile('qn.html');
+    if (app.isPackaged) {
+        mainWindow.loadFile('index.html'); // prod
+    } else {
+        mainWindow.loadURL('http://localhost:3000'); // dev
+    }
 }
 
 
@@ -38,11 +40,11 @@ ipcMain.on('send-qn', async (event, qn) => {
     win.hide();
 
     // Run the question through OpenAI's GPT-3 AI model to generate an answer
-    const completion = await openai.createChatCompletion({
+    /* const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: qn }],
     });
-    ans = completion.data.choices[0].message.content;
+    ans = completion.data.choices[0].message.content; */
     console.log(ans);
     reply(ans);
     // mainWindow.close();
